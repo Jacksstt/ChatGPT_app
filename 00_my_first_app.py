@@ -1,9 +1,11 @@
 import streamlit as st
 from gtts import gTTS
 import openai
+import os
 
 # OpenAIのAPIキーを設定
-openai.api_key = 'OPENAI_API_KEY'
+openai.api_key = os.environ.get("OPENAI_API_KEY")
+
 
 def get_gpt3_response(prompt):
     response = openai.Completion.create(
