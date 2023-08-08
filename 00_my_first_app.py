@@ -2,8 +2,6 @@ import streamlit as st
 from gtts import gTTS
 import openai
 import os
-from bs4 import BeautifulSoup
-import requests
 
 # OpenAIのAPIキーを設定
 openai.api_key = os.environ.get("OPENAI_API_KEY")
@@ -30,8 +28,36 @@ def get_image_from_duckduckgo(query):
 
 st.title('ChatGPTとの音声会話')
 
-# ユーザーからの入力を受け取る
-user_input = st.text_input("あなたの質問を入力してください:")
+# 音声入力のためのHTMLを追加
+html = """
+    <div>
+        <button onclick="startDictation()" type="button">音声入力開始</button>
+        <textarea id="result" rows="10" cols="50"></textarea>
+    </div>
+    <script>
+        function startDictation() {
+            if (window.hasOwnProperty('webkitSpeechRecognition')) {
+                var recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = "ja-JP";  # 日本語に設定
+                recognition.start();
+                recognition.onresult = function(e) {
+                    document.getElementById('result').value = e.results[0][0].transcript;
+                    recognition.stop();
+                };
+                recognition.onerror = function(e) {
+                    recognition.stop();
+                }
+            }
+        }
+    </script>
+"""
+
+st.markdown(html, unsafe_allow_html=True)
+
+# ユーザーからの音声入力を取得
+user_input = st.text_area("あなたの質問を入力してください:")
 
 if user_input:
     # ChatGPTからの応答を取得
@@ -45,7 +71,3 @@ if user_input:
     st.write(f"ChatGPT: {response}")
     st.audio("response.mp3")
     
-    # DuckDuckGoから関連する画像を取得
-    image_url = get_image_from_duckduckgo(user_input)
-    if image_url:
-        st.image(image_url, caption="関連画像", use_column_width=True)
