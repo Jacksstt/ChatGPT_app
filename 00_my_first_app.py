@@ -49,38 +49,9 @@ st.title('ChatGPTとの音声会話')
 # 会話の履歴を保存するリスト
 conversation_history = []
 
-# 音声入力のJavaScript
-voice_input_script = """
-<script>
-    function startDictation() {
-        if (window.hasOwnProperty('webkitSpeechRecognition')) {
-            var recognition = new webkitSpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.lang = "ja-JP";
-            recognition.start();
-            recognition.onresult = function(e) {
-                document.getElementById('voiceInput').value = e.results[0][0].transcript;
-                recognition.stop();
-                document.getElementById('voiceForm').submit();
-            };
-            recognition.onerror = function(e) {
-                recognition.stop();
-            }
-        }
-    }
-</script>
-"""
+# 音声入力ボタン
+st.write('<input type="text" id="voiceInput" name="voiceInput" onfocus="this.value=\'\'; this.onfocus=null;" x-webkit-speech>', unsafe_allow_html=True)
 
-st.markdown(voice_input_script, unsafe_allow_html=True)
-
-# 音声入力ボタンとテキスト入力フィールド
-st.markdown("""
-<form id="voiceForm" action="/action_page.php">
-  <input type="text" id="voiceInput" name="voiceInput">
-  <input type="button" value="音声入力" onclick="startDictation()">
-</form>
-""", unsafe_allow_html=True)
 
 user_input = st.text_input("あなたの質問を入力してください:")
 
