@@ -5,35 +5,6 @@ import os
 import streamlit as st
 from streamlit.components.v1 import html
 
-# 音声入力のJavaScript関数
-voice_input_script = """
-<button onclick="startDictation()">音声入力</button>
-<script>
-    function startDictation() {
-        if (window.hasOwnProperty('webkitSpeechRecognition')) {
-            var recognition = new webkitSpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.lang = "ja-JP";
-            recognition.start();
-            recognition.onresult = function(e) {
-                let voice_text = e.results[0][0].transcript;
-                document.getElementById('voiceInput').value = voice_text;
-                recognition.stop();
-                document.getElementById('voiceForm').submit();
-            };
-            recognition.onerror = function(e) {
-                recognition.stop();
-            }
-        }
-    }
-</script>
-"""
-
-# Streamlitアプリに音声入力ボタンを追加
-html(voice_input_script, height=100)
-
-# ユーザーの音声入力を取得
 user_input = st.text_input("あなたの質問を入力してください:")
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
