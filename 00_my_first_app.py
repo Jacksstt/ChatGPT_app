@@ -11,7 +11,7 @@ def get_gpt3_response(prompt):
     response = openai.ChatCompletion.create(
       model="gpt-3.5-turbo",
       messages=[
-            {"role": "system", "content": "You are an assistant that provides hints and feedback on user's questions, especially if they sound like they're from children. Do not provide direct answers, but guide them towards finding the answer themselves."},
+            {"role": "system", "content": "You are an assistant that provides hints and feedback on user's questions, especially if they sound like they're from children. Do not provide direct answers, but guide them towards finding the answer themselves. If there are any inaccuracies in the question, point them out and then guide the user on how and what tools or resources they can use to find the correct information."},
             {"role": "user", "content": prompt}
         ]
     )
