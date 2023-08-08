@@ -49,12 +49,45 @@ st.title('ChatGPTとの音声会話')
 # 会話の履歴を保存するリスト
 conversation_history = []
 
+# 音声入力のJavaScript
+voice_input_script = """
+<script>
+    function startDictation() {
+        if (window.hasOwnProperty('webkitSpeechRecognition')) {
+            var recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = "ja-JP";
+            recognition.start();
+            recognition.onresult = function(e) {
+                document.getElementById('voiceInput').value = e.results[0][0].transcript;
+                recognition.stop();
+                document.getElementById('voiceForm').submit();
+            };
+            recognition.onerror = function(e) {
+                recognition.stop();
+            }
+        }
+    }
+</script>
+"""
+
+st.markdown(voice_input_script, unsafe_allow_html=True)
+
+# 音声入力ボタンとテキスト入力フィールド
+st.markdown("""
+<form id="voiceForm" action="/action_page.php">
+  <input type="text" id="voiceInput" name="voiceInput">
+  <input type="button" value="音声入力" onclick="startDictation()">
+</form>
+""", unsafe_allow_html=True)
+
 user_input = st.text_input("あなたの質問を入力してください:")
 
 if user_input:
     response = get_gpt3_response(user_input)
     
-        # ユーザーの質問とChatGPTの応答を履歴に追加
+    # ユーザーの質問とChatGPTの応答を履歴に追加
     conversation_history.append({"role": "user", "content": user_input})
     conversation_history.append({"role": "ChatGPT", "content": response})
 
@@ -69,6 +102,4 @@ if user_input:
             else:
                 st.markdown(f'<div class="chat-bubble chatgpt">{item["content"]}</div>', unsafe_allow_html=True)
     
-    st.write(f"ChatGPT: {response}")
     st.audio("response.mp3")
-    
