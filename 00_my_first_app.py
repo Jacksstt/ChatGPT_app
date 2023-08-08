@@ -2,6 +2,17 @@ import streamlit as st
 from gtts import gTTS
 import openai
 import os
+from bs4 import BeautifulSoup
+
+def get_image_from_google(query):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+    url = f"https://www.google.com/search?q={query}&tbm=isch"
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.content, "html.parser")
+    img_tag = soup.find("img", {"class": "t0fcAb"})
+    return img_tag["src"] if img_tag else None
 
 # OpenAIのAPIキーを設定
 openai.api_key = os.environ.get("OPENAI_API_KEY")
