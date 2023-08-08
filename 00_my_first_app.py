@@ -2,8 +2,39 @@ import streamlit as st
 from gtts import gTTS
 import openai
 import os
-from bs4 import BeautifulSoup
-import requests
+import streamlit as st
+from streamlit.components.v1 import html
+
+# 音声入力のJavaScript関数
+voice_input_script = """
+<button onclick="startDictation()">音声入力</button>
+<script>
+    function startDictation() {
+        if (window.hasOwnProperty('webkitSpeechRecognition')) {
+            var recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = "ja-JP";
+            recognition.start();
+            recognition.onresult = function(e) {
+                let voice_text = e.results[0][0].transcript;
+                document.getElementById('voiceInput').value = voice_text;
+                recognition.stop();
+                document.getElementById('voiceForm').submit();
+            };
+            recognition.onerror = function(e) {
+                recognition.stop();
+            }
+        }
+    }
+</script>
+"""
+
+# Streamlitアプリに音声入力ボタンを追加
+html(voice_input_script, height=100)
+
+# ユーザーの音声入力を取得
+user_input = st.text_input("あなたの質問を入力してください:")
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
@@ -11,7 +42,7 @@ def get_gpt3_response(prompt):
     response = openai.ChatCompletion.create(
       model="gpt-3.5-turbo",
       messages=[
-            {"role": "system", "content": "You are an assistant that specializes in Japanese logic and is an expert in presenting in Japanese.Please point out only the mistakes in Japanese logical expressions, such as conjunctions, particles, sequential expressions, and paradoxical expressions."},
+            {"role": "system", "content": "You are an assistant that specializes in Japanese logic and is an expert in presenting in Japanese. You provide hints, feedback, and logical corrections on user's questions, especially if they sound like they're from children. You have a veteran's experience in Japanese presentations and can teach in a gentle manner, step by step, tailored for elementary and junior high school students. Do not provide direct answers. Instead, guide them towards finding the answer themselves by suggesting ways or methods to research. If there are any inaccuracies or logical inconsistencies in the question, point them out and then guide the user on how and what general types of tools or resources they can use to find the correct information, without specifying the exact answer.Please ensure that the output always includes a list of logical expression errors in the question, along with the reasons why they are incorrect."},
             {"role": "user", "content": prompt}
         ]
     )
@@ -49,7 +80,6 @@ st.title('ChatGPTとの音声会話')
 # 会話の履歴を保存するリスト
 conversation_history = []
 
-user_input = st.text_input("あなたの質問を入力してください:")
 
 if user_input:
     response = get_gpt3_response(user_input)
