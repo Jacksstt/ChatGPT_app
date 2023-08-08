@@ -5,8 +5,6 @@ import os
 import streamlit as st
 from streamlit.components.v1 import html
 
-user_input = st.text_input("あなたの質問を入力してください:")
-
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 def get_gpt3_response(prompt):
@@ -46,11 +44,12 @@ chat_style = """
 
 st.markdown(chat_style, unsafe_allow_html=True)
 
-st.title('ChatGPTとの音声会話')
+st.title('Teach Me')
 
 # 会話の履歴を保存するリスト
 conversation_history = []
 
+user_input = st.text_input("作ったプレゼンの原稿や文章を入力してください:")
 
 if user_input:
     response = get_gpt3_response(user_input)
