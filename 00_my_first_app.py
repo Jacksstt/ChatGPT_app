@@ -3,7 +3,7 @@ from gtts import gTTS
 import openai
 
 # OpenAIのAPIキーを設定
-openai.api_key = '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'
+openai.api_key = 'OPENAI_API_KEY'
 
 def get_gpt3_response(prompt):
     response = openai.Completion.create(
